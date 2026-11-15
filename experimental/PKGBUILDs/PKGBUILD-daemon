@@ -1,0 +1,50 @@
+# Paquete local experimental: demonio OpenRazer con soporte BlackShark V2 HS.
+pkgname=openrazer-daemon
+pkgver=3.12.4.blackshark
+pkgrel=1
+pkgdesc="Userspace daemon that abstracts access to the kernel driver (BlackShark V2 HS experimental)"
+arch=('any')
+url="https://openrazer.github.io"
+license=('GPL')
+depends=('dbus-python' 'openrazer-driver-dkms' 'python-daemonize'
+         'python-gobject' 'python-pyudev' 'python-setproctitle' 'xautomation')
+optdepends=('libnotify: for the battery notifier')
+source=("openrazer-$pkgver.tar.gz")
+sha256sums=('SKIP')
+
+package() {
+  cd openrazer
+
+  local pyver
+  pyver="$(python3 -c 'import sys; print(f"python{sys.version_info.major}.{sys.version_info.minor}")')"
+  local site="$pkgdir/usr/lib/$pyver/site-packages"
+  install -d "$site"
+  cp -r daemon/openrazer_daemon "$site/"
+  # Arch Linux usa el grupo «openrazer» en lugar de «plugdev».
+  sed -i 's/plugdev/openrazer/g' "$site/openrazer_daemon/daemon.py"
+  find "$site" -name '__pycache__' -type d -prune -exec rm -rf {} +
+  find "$site" -name '*.pyc' -delete
+
+  install -Dm755 daemon/run_openrazer_daemon.py \
+    "$pkgdir/usr/bin/openrazer-daemon"
+  install -Dm644 daemon/resources/razer.conf \
+    "$pkgdir/usr/share/openrazer/razer.conf.example"
+
+  sed 's|##PREFIX##|/usr|' daemon/resources/org.razer.service.in \
+    > org.razer.service
+  install -Dm644 org.razer.service \
+    "$pkgdir/usr/share/dbus-1/services/org.razer.service"
+
+  sed 's|##PREFIX##|/usr|' \
+    daemon/resources/openrazer-daemon.systemd.service.in \
+    > openrazer-daemon.service
+  install -Dm644 openrazer-daemon.service \
+    "$pkgdir/usr/lib/systemd/user/openrazer-daemon.service"
+
+  install -Dm644 daemon/resources/man/razer.conf.5 \
+    "$pkgdir/usr/share/man/man5/razer.conf.5"
+  gzip -n "$pkgdir/usr/share/man/man5/razer.conf.5"
+  install -Dm644 daemon/resources/man/openrazer-daemon.8 \
+    "$pkgdir/usr/share/man/man8/openrazer-daemon.8"
+  gzip -n "$pkgdir/usr/share/man/man8/openrazer-daemon.8"
+}

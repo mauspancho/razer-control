@@ -1,0 +1,18 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=Razer Control
+GenericName=Control de dispositivos Razer
+Comment=Controla DPI, iluminación, audio y auriculares Razer
+Exec=razer-control
+Icon=razer-control
+Terminal=false
+Categories=Utility;HardwareSettings;
+Keywords=razer;mouse;headset;audio;dpi;rgb;battery;
+StartupNotify=true
+StartupWMClass=razer-control
+Actions=Background;
+
+[Desktop Action Background]
+Name=Abrir en segundo plano
+Exec=razer-control --tray

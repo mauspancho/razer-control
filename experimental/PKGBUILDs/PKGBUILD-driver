@@ -1,0 +1,37 @@
+# Paquete local experimental: driver OpenRazer con soporte BlackShark V2 HS.
+pkgname=openrazer-driver-dkms
+pkgver=3.12.4.blackshark
+pkgrel=1
+pkgdesc="OpenRazer kernel modules sources (BlackShark V2 HS experimental)"
+arch=('any')
+url="https://openrazer.github.io"
+license=('GPL')
+depends=('dkms')
+source=("openrazer-$pkgver.tar.gz")
+sha256sums=('SKIP')
+
+package() {
+  cd openrazer
+
+  local src="$pkgdir/usr/src/openrazer-driver-$pkgver"
+  install -d "$src/driver"
+  install -m644 Makefile "$src/Makefile"
+  install -m644 install_files/dkms/dkms.conf "$src/dkms.conf"
+  sed -i "s/^PACKAGE_VERSION=.*/PACKAGE_VERSION=\"$pkgver\"/" "$src/dkms.conf"
+  sed -i "s/^DKMS_VER?=.*/DKMS_VER?=$pkgver/" "$src/Makefile"
+  install -m644 driver/Makefile "$src/driver/Makefile"
+  install -m644 driver/*.c driver/*.h "$src/driver/"
+  rm -f "$src/driver/"*.mod.c
+
+  install -Dm755 install_files/udev/razer_mount \
+    "$pkgdir/usr/lib/udev/razer_mount"
+  install -Dm644 install_files/udev/99-razer.rules \
+    "$pkgdir/usr/lib/udev/rules.d/99-razer.rules"
+  # Arch Linux usa el grupo «openrazer», no «plugdev».
+  sed -i 's/GROUP:="plugdev"/GROUP:="openrazer"/' \
+    "$pkgdir/usr/lib/udev/rules.d/99-razer.rules"
+  sed -i 's/chgrp -R plugdev/chgrp -R openrazer/' \
+    "$pkgdir/usr/lib/udev/razer_mount"
+  install -d "$pkgdir/usr/lib/sysusers.d"
+  printf 'g openrazer -\n' > "$pkgdir/usr/lib/sysusers.d/openrazer.conf"
+}

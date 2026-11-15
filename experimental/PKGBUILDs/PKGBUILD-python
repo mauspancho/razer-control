@@ -1,0 +1,24 @@
+# Paquete local experimental: cliente Python de OpenRazer con BlackShark V2 HS.
+pkgname=python-openrazer
+pkgver=3.12.4.blackshark
+pkgrel=1
+pkgdesc="Library for interacting with the OpenRazer daemon (BlackShark V2 HS experimental)"
+arch=('any')
+url="https://openrazer.github.io"
+license=('GPL')
+depends=('openrazer-daemon' 'python-numpy')
+source=("openrazer-$pkgver.tar.gz")
+sha256sums=('SKIP')
+
+package() {
+  cd openrazer
+
+  local pyver
+  pyver="$(python3 -c 'import sys; print(f"python{sys.version_info.major}.{sys.version_info.minor}")')"
+  local site="$pkgdir/usr/lib/$pyver/site-packages"
+  install -d "$site"
+  cp -r pylib/openrazer "$site/"
+  rm -rf "$site/openrazer/_fake_driver"
+  find "$site" -name '__pycache__' -type d -prune -exec rm -rf {} +
+  find "$site" -name '*.pyc' -delete
+}

@@ -1,0 +1,22 @@
+# Entorno local
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# Notas internas y prompts de desarrollo (no forman parte de la app)
+SYSTEM_PROMPT.md
+AGENTS.md
+.opencode/
+
+# Registros y artefactos de pruebas
+*.log
+experimental/logs/
+*.png.tmp
+
+# Editores
+.idea/
+.vscode/
+*.swp
+.DS_Store
