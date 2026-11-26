@@ -30,6 +30,9 @@ DAEMON_HINT: Final[str] = (
     "Ejecuta la aplicación dentro de tu sesión gráfica, sin sudo.\n"
     "Si tu distribución usa el servicio del sistema:\n"
     "  sudo systemctl start openrazer-daemon\n"
+    "Si acabas de actualizar el kernel, reinicia para cargar el módulo DKMS:\n"
+    "  dkms status\n"
+    "  uname -r\n"
     "Si acabas de instalar OpenRazer, reinicia la sesión."
 )
 

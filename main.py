@@ -5,10 +5,14 @@ from __future__ import annotations
 import logging
 import sys
 
-USAGE = """Uso: razer-control [opciones]
+from version import __version__
+
+USAGE = f"""Uso: razer-control [opciones]
 
 Opciones:
   --tray, --hidden   Inicia la aplicación oculta en la bandeja del sistema.
+  --diagnose         Muestra el estado de OpenRazer, el kernel y la bandeja.
+  --version          Muestra la versión instalada.
   -h, --help         Muestra esta ayuda.
 """
 
@@ -18,6 +22,16 @@ def main(argv: list[str] | None = None) -> int:
 
     if "--help" in args or "-h" in args:
         print(USAGE, end="")
+        return 0
+
+    if "--version" in args:
+        print(f"Razer Control {__version__}")
+        return 0
+
+    if "--diagnose" in args:
+        from diagnostics import render_report
+
+        print(render_report())
         return 0
 
     start_hidden = any(arg in {"--tray", "--hidden"} for arg in args)

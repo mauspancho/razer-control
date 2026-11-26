@@ -109,10 +109,14 @@ sudo pacman -Sw openrazer-daemon openrazer-driver-dkms python-openrazer
 - `pacman -Syu` reemplazará estos paquetes cuando haya una versión oficial
   superior. Para conservarlos, añade temporalmente a `/etc/pacman.conf`:
   `IgnorePkg = openrazer-daemon openrazer-driver-dkms python-openrazer`
-- DKMS reconstruirá el módulo en cada actualización de kernel.
-- No se ha reiniciado el equipo; el módulo se cargó en caliente, se enlazó por
-  udev y el demonio se reinició. Un reinicio es la prueba definitiva de
-  persistencia.
+- OpenRazer oficial `v3.12.5` (24/11/2026) solo corrige la compilación de
+  `razerkbd` en Ubuntu y no incluye el driver `razerblackshark`; no aporta nada
+  al BlackShark y no sustituye a estos paquetes.
+- DKMS reconstruirá el módulo en cada actualización de kernel. El kernel nuevo
+  no se usa hasta reiniciar; `razer-control --diagnose` avisa de esa situación.
+- La prueba inicial se hizo sin reiniciar; el módulo se cargó en caliente, se
+  enlazó por udev y el demonio se reinició. Un reinicio es la prueba definitiva
+  de persistencia.
 - La interfaz integra EQ, sidetone, DND y el estado del micrófono. El control
   del LED de estado y el silencio físico no están en la UI: el primero no tiene
   modos documentados y el segundo depende del interruptor del propio headset.

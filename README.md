@@ -122,6 +122,18 @@ razer-control --help     # opciones
 También puedes abrirla desde el menú de aplicaciones como **Razer Control**, o
 usar la acción **Abrir en segundo plano** del propio menú.
 
+### Diagnóstico
+
+```bash
+razer-control --diagnose
+razer-control --version
+```
+
+`--diagnose` muestra en un vistazo la distribución, la sesión, el kernel en uso
+frente a los instalados, el estado del demonio, la versión de OpenRazer, los
+dispositivos con sus capacidades, DKMS, la bandeja y el audio. Es la forma más
+rápida de comprobar si una actualización del sistema afectó a la aplicación.
+
 ### Bandeja y segundo plano
 
 - El botón **Minimizar a la bandeja** oculta la ventana y mantiene la app
@@ -168,7 +180,9 @@ con `experimental/rollback.sh`.
 ## Arquitectura
 
 ```text
-main.py            Punto de entrada y opciones --tray/--hidden
+main.py            Punto de entrada y opciones --tray/--hidden/--diagnose
+version.py         Versión de la aplicación
+diagnostics.py     Informe de sistema, OpenRazer, DKMS, bandeja y audio
 ui.py              Interfaz CustomTkinter, tarjetas por capacidad y bandeja
 tray_service.py    Icono AppIndicator/StatusNotifier en un hilo GTK propio
 razer_service.py   Backend OpenRazer (HID)
@@ -201,6 +215,28 @@ Para el icono de bandeja hacen falta además `python-gobject` y
 `libappindicator` del sistema (ver la tabla de requisitos).
 
 ## Solución de problemas
+
+**Acabo de actualizar el kernel o el driver de Razer.**
+
+DKMS recompila el módulo automáticamente al instalar un kernel nuevo, pero el
+sistema sigue usando el kernel anterior hasta que reinicias:
+
+```bash
+razer-control --diagnose   # avisa si hay un kernel más nuevo instalado
+dkms status
+uname -r
+modinfo razerblackshark
+```
+
+Reinicia para cargar el módulo del kernel nuevo. Si el módulo no aparece tras el
+reinicio, reinstala `openrazer-driver-dkms` y vuelve a comprobar `dkms status`.
+
+Los paquetes experimentales están fijados a `3.12.4.blackshark-1`. Una versión
+oficial superior (por ejemplo `3.12.5`) puede reemplazarlos en un `pacman -Syu`;
+en ese caso vuelve a ejecutar `experimental/install.sh` o añade temporalmente
+`IgnorePkg` como se explica en [`experimental/README.md`](experimental/README.md).
+OpenRazer oficial todavía no incluye el driver `razerblackshark`, así que el
+fork sigue siendo necesario para el BlackShark.
 
 **El menú de KDE muestra la entrada sin icono.** El escritorio conservó la
 caché anterior:

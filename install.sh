@@ -126,6 +126,8 @@ for file in \
   audio_service.py \
   usb_service.py \
   tray_service.py \
+  diagnostics.py \
+  version.py \
   README.md
 do
   install -m644 "$SCRIPT_DIR/$file" "$PREFIX/$file"
